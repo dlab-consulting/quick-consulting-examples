@@ -34,7 +34,7 @@ import pandas as pd
 # using a dictionary comprehension to iterate over all stata files to read as a pandas dataframe
 # and generate a dictionary with filename as key and variable list as values
 # https://python-reference.readthedocs.io/en/latest/docs/comprehensions/dict_comprehension.html
-allvars = {fname : list(pd.read_stata(fname)) for fname in dtafiles}
+allvars = {fname : pd.read_stata(fname, iterator=True).varlist for fname in dtafiles}
 allvars
 
 # Similar to above, but we ignore any variables not in our match list using set intersection.
