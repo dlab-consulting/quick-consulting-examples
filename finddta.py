@@ -31,7 +31,7 @@ for root, dirs, files in os.walk(startdir):
 
 import pandas as pd
 
-# using a dictionary comprehension to iterate over all stata files to read as a pandas dataframe 
+# using a dictionary comprehension to iterate over all stata files to read as a pandas dataframe
 # and generate a dictionary with filename as key and variable list as values
 # https://python-reference.readthedocs.io/en/latest/docs/comprehensions/dict_comprehension.html
 allvars = {fname : list(pd.read_stata(fname)) for fname in dtafiles}
@@ -42,5 +42,5 @@ allvars
 # filter files to just the subset that matches the list of variables we are interested in
 # and generate a dictionary with filename as key and the NARROWED variable list in that file
 matches = ['arc_street','x','y','stan_addr','match_addr','adrs']
-files_with_matching_variables_filtered = {fname : set(matches).intersection(variables) for fname,variables in allvars.items() if any(elem in matches for elem in variables)} 
+files_with_matching_variables_filtered = {fname : set(matches).intersection(variables) for fname,variables in allvars.items() if any(elem in matches for elem in variables)}
 print(files_with_matching_variables_filtered)
