@@ -5,6 +5,8 @@ import os
 import os.path
 import re
 import sys
+import pandas as pd
+from fuzzywuzzy import process
 
 startdir = '/home/prisoner/data'
 #startdir = '/home/prisoner/data/analysis/casenoteaddresses'
@@ -36,9 +38,6 @@ for root, dirs, files in os.walk(startdir):
     for fname in files:
         #print(fname)
         dtafiles.append(fname)
-
-import pandas as pd
-from fuzzywuzzy import process
 
 # using a dictionary comprehension to iterate over all stata files to read as a pandas dataframe
 # and generate a dictionary with filename as key and variable list as values
