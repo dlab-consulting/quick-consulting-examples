@@ -45,10 +45,13 @@ for root, dirs, files in os.walk(startdir):
 allvars = {fname : pd.read_stata(fname, iterator=True).varlist for fname in dtafiles}
 allvars
 
-# Similar to above, but we ignore any variables not in our match list using set intersection.
+# This version outputs the FULL varibale list since that will be helpful at a
+# later stage when we drop columns from the stata files.
 #
 # filter files to just the subset that matches the list of variables we are interested in
-# and generate a dictionary with filename as key and the NARROWED variable list in that file
+# and generate a dictionary with filename as key and the FULL variable list in that file
+#
+# This also uses fuzzy variable matching with a tuneable threshold value between 0-100.
 threshold = 90
 choices = ['arc_street','x','y','stan_addr','match_addr','adrs']
 matches = []
