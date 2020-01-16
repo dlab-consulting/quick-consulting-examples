@@ -4,10 +4,16 @@ import fnmatch
 import os
 import os.path
 import re
+import sys
 
-#startdir = '.' # by default start "here" in current directory
 startdir = '/home/prisoner/data'
 #startdir = '/home/prisoner/data/analysis/casenoteaddresses'
+
+if not os.path.exists(startdir):
+	startdir = '.' # by default start "here" in current directory if directory does not exist
+
+print(f"Searching in directory: {startdir}", file=sys.stderr)
+
 includes = ['*.dta'] # for files only
 excludes = [] # for dirs and files
 
