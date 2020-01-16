@@ -38,6 +38,7 @@ for root, dirs, files in os.walk(startdir):
         dtafiles.append(fname)
 
 import pandas as pd
+from fuzzywuzzy import process
 
 # using a dictionary comprehension to iterate over all stata files to read as a pandas dataframe
 # and generate a dictionary with filename as key and variable list as values
@@ -49,6 +50,16 @@ allvars
 #
 # filter files to just the subset that matches the list of variables we are interested in
 # and generate a dictionary with filename as key and the NARROWED variable list in that file
-matches = ['arc_street','x','y','stan_addr','match_addr','adrs']
-files_with_matching_variables_filtered = {fname : set(matches).intersection(variables) for fname,variables in allvars.items() if any(elem in matches for elem in variables)}
-print(files_with_matching_variables_filtered)
+threshold = 90
+choices = ['arc_street','x','y','stan_addr','match_addr','adrs']
+matches = []
+files_with_matching_variables = {}
+for fname,variables in allvars.items():
+    list_of_lists = [process.extract(x, variables, limit=None) for x in choices]
+    flattened = [val for sublist in list_of_lists for val in sublist]
+    matches = list(set([x for x,y in flattened if y>=threshold]))
+    # if any(elem in matches for elem in variables)
+    #print(fname,matches,variables)
+    if matches:
+        files_with_matching_variables[fname] = matches
+print(files_with_matching_variables)
