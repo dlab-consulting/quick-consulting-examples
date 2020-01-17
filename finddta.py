@@ -67,9 +67,9 @@ choices = ['arc_street','x','y','stan_addr','match_addr','adrs']
 matches = []
 files_with_matching_variables = {}
 for fname,variables in allvars.items():
-    list_of_lists = [process.extract(x, variables, limit=None) for x in choices]
+    list_of_lists = [process.extract(a, variables, limit=None) for a in choices]
     flattened = [val for sublist in list_of_lists for val in sublist]
-    matches = OrderedSet([x for x,y in flattened if y>=threshold])
+    matches = OrderedSet([a for a,b in flattened if b>=threshold])
     todrop = OrderedSet(variables) - matches
     if matches:
         files_with_matching_variables[fname] = [list(matches), list(todrop)]
