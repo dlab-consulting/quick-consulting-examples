@@ -55,7 +55,7 @@ with open('error.log', 'w') as log:
 # later stage when we drop columns from the stata files.
 #
 # filter files to just the subset that matches the list of variables we are interested in
-# and generate a dictionary with filename as key and the FULL variable list in that file
+# and generate a dictionary with filename as key and the matching  variable list in that file
 #
 # This also uses fuzzy variable matching with a tuneable threshold value between 0-100.
 threshold = 90
