@@ -39,11 +39,17 @@ for root, dirs, files in os.walk(startdir):
         #print(fname)
         dtafiles.append(fname)
 
-# using a dictionary comprehension to iterate over all stata files to read as a pandas dataframe
+# iterate over all stata files to read as a pandas dataframe
 # and generate a dictionary with filename as key and variable list as values
-# https://python-reference.readthedocs.io/en/latest/docs/comprehensions/dict_comprehension.html
-allvars = {fname : pd.read_stata(fname, iterator=True).varlist for fname in dtafiles}
-allvars
+# handling any corrupted file errors by logging to error.log and moving on
+allvars = {}
+with open('error.log', 'w') as log:
+    for fname in dtafiles:
+        try:
+            allvars[fname] = pd.read_stata(fname, iterator=True).varlist
+        except:
+            print("Corrupt file:", fname, file=sys.stderr)
+            print(fname, file=log)
 
 # This version outputs the FULL varibale list since that will be helpful at a
 # later stage when we drop columns from the stata files.
