@@ -7,6 +7,8 @@ import re
 import sys
 import pandas as pd
 from fuzzywuzzy import process
+from ordered_set import OrderedSet
+import pprint
 
 startdir = '/home/prisoner/data'
 #startdir = '/home/prisoner/data/analysis/casenoteaddresses'
@@ -51,11 +53,13 @@ with open('error.log', 'w') as log:
             print("Corrupt file:", fname, file=sys.stderr)
             print(fname, file=log)
 
-# This version outputs the FULL varibale list since that will be helpful at a
-# later stage when we drop columns from the stata files.
+# This version outputs the FULL list of variables as a list of lists (matches,
+# then todrop) since that will be helpful to see which variables were included
+# and excluded in the fuzzy match
 #
-# filter files to just the subset that matches the list of variables we are interested in
-# and generate a dictionary with filename as key and the matching  variable list in that file
+# filter files to just the subset that matches the list of variables we are
+# interested in based on fuzzy matching and then generate a dictionary with
+# filename as key and the matching variable list in that file
 #
 # This also uses fuzzy variable matching with a tuneable threshold value between 0-100.
 threshold = 90
@@ -65,9 +69,9 @@ files_with_matching_variables = {}
 for fname,variables in allvars.items():
     list_of_lists = [process.extract(x, variables, limit=None) for x in choices]
     flattened = [val for sublist in list_of_lists for val in sublist]
-    matches = list(set([x for x,y in flattened if y>=threshold]))
-    # if any(elem in matches for elem in variables)
-    #print(fname,matches,variables)
+    matches = OrderedSet([x for x,y in flattened if y>=threshold])
+    todrop = OrderedSet(variables) - matches
     if matches:
-        files_with_matching_variables[fname] = matches
-print(files_with_matching_variables)
+        files_with_matching_variables[fname] = [list(matches), list(todrop)]
+pp = pprint.PrettyPrinter(compact=True)
+pp.pprint(files_with_matching_variables)
