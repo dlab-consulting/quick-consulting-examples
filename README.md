@@ -5,7 +5,8 @@ Collection of quick pandas, python, and other coding examples based on real cons
 ## Geopandas Discovery Project Example - How to create a heat map using geopandas
 
 *Scenario:* This is an example consulting request from a [Discovery project](https://data.berkeley.edu/research/discovery-program-home) by an Undergraduate Student from Econ and Data Science requesting help with Data Visualization as a Debugging or Tech support request saying: "I would like to create a geopandas heat map of India (with coordinates and a legend of certain levels of GDP per capita), but I've never used geopandas before so a little unsure on how to create this mapping. Also unsure if I need to convert to a shape file."
-[![Binder](https://datahub.berkeley.edu/hub/user-redirect/git-pull?repo=https%3A%2F%2Fgithub.com%2Fdlab-berkeley%2Fquick-consulting-examples.git&urlpath=tree%2Fquick-consulting-examples%2FGeopandas+Discovery+Project+Example.ipynb&branch=master)
+[![Datahub](https://mybinder.org/badge_logo.svg)](https://datahub.berkeley.edu/hub/user-redirect/git-pull?repo=https%3A%2F%2Fgithub.com%2Fdlab-berkeley%2Fquick-consulting-examples.git&urlpath=tree%2Fquick-consulting-examples%2FGeopandas+Discovery+Project+Example.ipynb&branch=master)
+
 
 ## JoinMulltipleCSV - How to join multiple CSV files into a single Pandas DataFrame based on a join key.
 
