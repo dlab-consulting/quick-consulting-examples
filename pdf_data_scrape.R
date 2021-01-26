@@ -21,7 +21,8 @@ library(fs)
 # designate file path
 PATH <- "~/Desktop/mines"
 file_paths <- fs::dir_ls(PATH)
-## go to Session > Set Working Directory > Choose Directory and choose the folder where the pdfs are. then look down there in the console window, find the directory and paste into where PATH is, in between the "quotes".
+## go to Session > Set Working Directory > Choose Directory and choose the folder where the pdfs are. 
+## Look down there in the console window, find the directory and paste into where PATH is, in between the "quotes".
 
 # empty variable 
 file_contents <- list()
@@ -50,9 +51,9 @@ mine_id <- file_contents_lines %>%
   str_subset("(Mine ID: \\w+)") %>% 
   str_replace_all("Mine ID: ", "") %>% 
   str_squish()
+
 # Mine ID appears more than once in the text.
 mine_id <- unique(mine_id) 
-
 mine_id_df<- data.frame(mine_id)
 
 map_id <-
@@ -85,7 +86,7 @@ county <-
 county_df <- data.frame(county)
 
 
-### Table Values ### Works when a text-based table is present is articles.. 
+### Table Values ### Works when a text-based table is present in pdf. 
 #Note: could error if values = <1000 | >999999
 
 n_reads <- 
@@ -109,7 +110,6 @@ gam_min <-
   str_subset("(Minimum \\S+\\s\\d+\\S\\d+)") %>% 
   str_extract("\\d+[:punct:]\\d+") %>% 
   str_squish() 
-
 gam_min_df <- data.frame(gam_min)
 
 gam_mean <- 
@@ -117,7 +117,6 @@ gam_mean <-
   str_subset("(Mean \\S+\\s\\d+\\S\\d+)") %>% 
   str_extract("\\d+[:punct:]\\d+") %>% 
   str_squish() 
-
 gam_mean_df <- data.frame(gam_mean)
 
 gam_median <- 
@@ -125,7 +124,6 @@ gam_median <-
   str_subset("(Median \\S+\\s\\d+\\S\\d+)") %>% 
   str_extract("\\d+[:punct:]\\d+") %>% 
   str_squish() 
-
 gam_median_df <- data.frame(gam_median)
 
 sig_of_readings <- 
@@ -133,10 +131,7 @@ sig_of_readings <-
   str_subset("(Standard Deviation \\d+\\S\\d+)") %>% 
   str_extract("\\d+[:punct:]\\d+") %>% 
   str_squish() 
-
 sig_of_readings_df <- data.frame(sig_of_readings)
-
-
   
 # mine coordinates
 m_lat_long <- file_contents_lines %>% 
@@ -150,9 +145,10 @@ m_lat_long <- file_contents_lines %>%
 # has commas, needs functional formatting to data.frame. 
 lat_long_col_df <- plyr::ldply(m_lat_long)
 
-full_table_df <- cbind(mine_id, map_id_df, cerlis_df, namlrp_num, n_reads_df, gam_max_df, gam_min_df, gam_mean_df, gam_median_df, sig_of_readings_df, lat_long_col_df )
+full_table_df <- cbind(mine_id, map_id_df, cerlis_df, namlrp_num, n_reads_df, gam_max_df, 
+                       gam_min_df, gam_mean_df, gam_median_df, sig_of_readings_df, lat_long_col_df )
 
-#write a csv with the full data. Should path be in the folder where the pdfs are. 
+#write a .csv with the full data. 
 write.csv(full_table_df, "mine_tables.csv")
 
 
