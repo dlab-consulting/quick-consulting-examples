@@ -4,7 +4,7 @@ Collection of quick pandas, python, and other coding examples based on real cons
 
 ## VoltStats Data Archive - Webscraping example
 
-*Scenario:* This is an example of webscraping a website that containts 10 years of historical user-generated data that used OnStar to collect data about the performance of Chevy Volts driving in the real world. [![Datahub](https://mybinder.org/badge_logo.svg)](https://dlab.datahub.berkeley.edu/hub/user-redirect/git-pull?repo=https%3A%2F%2Fgithub.com%2Fdlab-berkeley%2Fquick-consulting-examples&urlpath=tree%2Fquick-consulting-examples%2FVolt%20Stats%20solution%20in%20Python.ipynb&branch=master)
+*Scenario:* This is an example of webscraping a website that containts 10 years of historical user-generated data that used OnStar to collect data about the performance of Chevy Volts driving in the real world. [![Datahub](https://img.shields.io/badge/launch-datahhub-blue)](https://dlab.datahub.berkeley.edu/hub/user-redirect/git-pull?repo=https%3A%2F%2Fgithub.com%2Fdlab-berkeley%2Fquick-consulting-examples&urlpath=tree%2Fquick-consulting-examples%2FVolt%20Stats%20solution%20in%20Python.ipynb&branch=master)
 
 
 ## Geopandas Discovery Project Example - How to create a heat map using geopandas
