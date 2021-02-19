@@ -2,6 +2,11 @@
 
 Collection of quick pandas, python, and other coding examples based on real consulting requests.
 
+## VoltStats Data Archive - Webscraping example
+
+*Scenario:* This is an example of webscraping a website that containts 10 years of historical user-generated data that used OnStar to collect data about the performance of Chevy Volts driving in the real world. [![Datahub](https://mybinder.org/badge_logo.svg)](https://dlab.datahub.berkeley.edu/hub/user-redirect/git-pull?repo=https%3A%2F%2Fgithub.com%2Fdlab-berkeley%2Fquick-consulting-examples&urlpath=tree%2Fquick-consulting-examples%2FVolt%20Stats%20solution%20in%20Python.ipynb&branch=master)
+
+
 ## Geopandas Discovery Project Example - How to create a heat map using geopandas
 
 *Scenario:* This is an example consulting request from a [Discovery project](https://data.berkeley.edu/research/discovery-program-home) by an Undergraduate Student from Econ and Data Science requesting help with Data Visualization as a Debugging or Tech support request saying: "I would like to create a geopandas heat map of India (with coordinates and a legend of certain levels of GDP per capita), but I've never used geopandas before so a little unsure on how to create this mapping. Also unsure if I need to convert to a shape file."
