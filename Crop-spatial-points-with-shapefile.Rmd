@@ -1,0 +1,106 @@
+---
+title: "cropping spatial coordinates to shapefile"
+author: "Avery Richards"
+date: "3/15/2022"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+https://r-spatial.github.io/sf/articles/
+https://datacarpentry.org/semester-biology/materials/spatial-data-cropping-R/
+
+
+```{r}
+
+# install pacman as needed
+if (!require("pacman")) install.packages("pacman")
+
+# install and loads needed packages (add comma and another package to install & load)
+pacman::p_load(
+  tidyverse, # data wrangling
+  sf, # geospatial wrangling
+  raster # shapefile access
+  )
+
+```
+
+
+```{r}
+
+# download shapefile of usa. 
+usa_shapes <- raster::getData("GADM",country="USA",level=1)
+
+# subset to florida
+florida_shape <- usa_shapes[usa_shapes$NAME_1 == "Florida",]
+
+# sf object, transform crs.
+florida <- st_as_sf(florida_shape) %>% 
+            st_transform(crs = 102009) 
+
+# check crs.
+st_crs(florida)
+
+
+```
+
+
+```{r}
+
+# plot shape.
+plot(st_geometry(florida))
+
+```
+
+
+
+```{r}
+
+# North America vascular flora dataset
+northamerica <- read.csv('Spatial_data_for_study_on_spatial_phylogenetics_of_the_North_American_flora_(Mishler_et_al._2020).csv')
+
+# evaluate structure
+glimpse(northamerica)
+
+```
+
+
+
+
+```{r}
+
+# create geospatial dataframe.
+n_america <- st_as_sf(northamerica, coords = c("x", "y"), crs = 102009)
+
+# check CRS
+st_crs(n_america)
+
+
+```
+
+
+
+```{r}
+
+# CRS equivalent?
+st_crs(florida) == st_crs(n_america)
+
+```
+
+
+```{r}
+# crop n_amercia to florida shapefile.
+florida_phy <- st_crop(n_america, florida)
+florida_phy
+```
+
+```{r}
+
+# test output of cropped data. 
+plot(florida_phy)
+
+```
+
+
