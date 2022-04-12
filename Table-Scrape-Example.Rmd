@@ -1,0 +1,73 @@
+---
+title: "Scraping Tables from html with R"
+author: "Avery Richards"
+date: '2022-04-12'
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+Where I learned how to do this: 
+# https://rvest.tidyverse.org/
+
+
+```{r}
+
+library(tidyverse)
+library(rvest)
+library(janitor)
+
+```
+
+Running this next function goes to the internet and calls a webpage, so be polite when running it. It depends on the web so you may get errors. Webpages are weary of bots, as they should be.. 
+
+```{r}
+
+# first read html of website into R environment
+beds <- rvest::read_html("https://www.ahd.com/state_statistics.html")
+
+beds
+
+```
+Next we need to go to the webpage itself and dig into the html. This is the part that's tricky. 
+
+# https://www.ahd.com/state_statistics.html
+
+How this works is you need to go to the webpage in an internet browser and right-click the page itself. There will be an option in the menu, on Firefox it's called "inspect". Toggle into inspect and locate the table. You'll need to scroll around, but there is a visual component that'll guide you, along with your eyes traversing the html. Once you've found where the table is, nested there in the html code, you can extract it with two simple functions:
+
+```{r}
+
+# find an element based on its tag.
+?html_element
+
+```
+
+```{r}
+
+# turn that element into a dataframe. 
+?html_table
+
+```
+
+
+```{r}
+
+bed_table <- beds %>% 
+  # looks in the html downloaded for any tag named "report"
+  html_element(".report") %>% 
+  # makes a dataframe out of that object. 
+  html_table() 
+
+```
+
+
+```{r}
+
+# write as a csv file. 
+write_csv(bed_table, "us-hospital-statistics-by-state.csv")
+
+```
+
+Note: this example works on a fairly simple html table. Tables can get pretty complex, using modules and other code like javascript. Hopefully a starting point like this can lead to more complex data scraping ventures. Just remember to [be polite](https://www.rostrum.blog/2019/03/04/polite-webscrape/) whenever acquiring data in this way!   
