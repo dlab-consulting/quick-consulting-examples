@@ -1,0 +1,215 @@
+---
+title: "tidymodels_lasso_example"
+author: "Avery Richards"
+date: '2022-05-07'
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+The following is a very basic implementation of a lasso regression modelling using the `glmnet` framework with [`tidymodels`](https://www.tidymodels.org/) to observe variable importance. We also use a parameter grid to optimize some parameters. 
+
+Note this code below is merely an exercise in data formatting and model parameter selection. Lasso approach works best with wide data, (lots of columns), and what we have here is totally sparse. 
+
+```{r}
+
+library(tidyverse) # data management
+library(janitor) # data cleaning
+
+
+iris_df <- as.data.frame(iris) %>% 
+  # column names to snake_case. 
+  janitor::clean_names()
+
+glimpse(iris_df)
+```
+
+First we need to split on some numeric variable, in this case let's just do `sepal_length`.
+
+```{r}
+
+# load libraries
+library(tidymodels) 
+library(glmnet) # lasso 
+library(vip) # variable importance
+
+# split data, stratify split on outcome variable. 
+iris_split <- initial_split(iris_df, strata = sepal_length)
+iris_train <- training(iris_split)
+iris_test <- testing(iris_split)
+
+
+```
+
+Recipes help handle the pre-processing required to run certain models. 
+
+```{r}
+
+# create 'recipe' object with training portion of data.
+iris_recipe <- 
+  recipe(sepal_length ~., data = iris_train) %>% 
+  # species in not numeric and can't be included with lasso. 
+   update_role(species, new_role = "ID") %>%
+  # lasso requires numerical values to be normalized. 
+  step_zv(all_numeric(), -all_outcomes()) %>% 
+  step_normalize(all_numeric(), -all_outcomes())
+
+
+iris_prep <- iris_recipe %>% 
+  prep()
+
+# three predictors, one outcome, one ID variable. 
+iris_prep
+
+```
+
+Next we specify our model, put together a workflow and do a preliminary fit of our variables. 
+
+```{r}
+
+# model specification.
+lasso_spec <- 
+  linear_reg(penalty = 0.1, mixture = 1) %>%
+  set_engine("glmnet")
+
+# useful if we'd like to test other models on our data!
+wf <- workflow() %>%
+  add_recipe(iris_recipe)
+
+# add our model and fit to the training data. 
+lasso_fit <- wf %>%
+  add_model(lasso_spec) %>%
+  fit(data = iris_train)
+
+# extract fitted metrics.
+lasso_fit %>%
+ extract_fit_parsnip() %>%
+  tidy()
+
+```
+
+Bootstrapping is a way to take random samples and refit a model many times. When we do this we can simulate new data sets, using the [law of large numbers](https://en.wikipedia.org/wiki/Law_of_large_numbers) to add statistical depth to measures of variability. 
+
+
+```{r}
+
+# set random seed
+set.seed(94706)
+
+# create bootstrap object. 
+iris_boot <- bootstraps(iris_train, strata = sepal_length)
+```
+
+Model tuning: setting parameters can be a tricky part to model creation. In this case, we are using the `tune()` function to optimize the `penalty` parameter with a grid object.  
+
+```{r}
+
+# tuned specification
+tune_spec <- linear_reg(penalty = tune(),
+                        mixture = 1) %>% set_engine("glmnet")
+
+# tuning grid on 50 models. 
+lambda_grid <- grid_regular(penalty(), 
+                            levels = 50)
+
+```
+
+Now to run our tuned model.
+
+```{r}
+
+# evoke parallel processing.
+doParallel::registerDoParallel()
+
+# tune model on the grid. 
+lasso_grid <- tune_grid(
+  wf %>% add_model(tune_spec),
+  resamples = iris_boot,
+  grid = lambda_grid
+)
+
+
+```
+
+The outputs are available for each model we tested, each with two metrics, root mean squared error and r-squared. 
+
+```{r}
+# have a look at the outputs of each model.
+lasso_grid %>%
+  collect_metrics()
+
+
+```
+
+We can visualize our outputs and choose which tuned parameters performed best on our test data. 
+
+```{r}
+
+# create visualization with model metrics. 
+lasso_grid %>%
+  collect_metrics() %>%
+  ggplot(aes(penalty, mean, color = .metric)) +
+  geom_errorbar(aes(
+    ymin = mean - std_err,
+    ymax = mean + std_err),
+    alpha = 0.5) +
+  geom_line(size = .5) +
+  facet_wrap(~.metric, scales = "free", nrow = 2) +
+  scale_x_log10() +
+  theme(legend.position = "none")
+
+
+```
+
+
+```{r}
+
+# select best root mean squared error value (the lowest error)
+lowest_rmse <- lasso_grid %>%
+  select_best("rmse")
+
+# finalize our model workflow. 
+final_lasso <- finalize_workflow(
+  wf %>% add_model(tune_spec),
+  lowest_rmse)
+
+
+```
+
+Now we can look at the variable importance: which elements of this data set contributed, (and by how much) to our outcome. 
+
+```{r}
+
+# create data frame with vi metrics 
+final_lasso %>%
+  fit(iris_train) %>%
+  extract_fit_parsnip() %>%
+  vi(lambda = lowest_rmse$penalty) %>%
+  mutate(
+    Importance = abs(Importance),
+    Variable = fct_reorder(Variable, Importance)) %>%
+  # visualize as bar chart.
+  ggplot(aes(x = Importance, y = Variable, fill = Sign)) +
+  geom_col() +
+  scale_x_continuous(expand = c(0, 0)) +
+  labs(y = NULL)
+
+
+```
+
+Variable importance can measure how each variable contributes to the outcome. 
+
+```{r}
+
+# fit one last time on your training data to evaluate.
+last_fit(
+  final_lasso,
+  iris_split) %>%
+  collect_metrics()
+
+```
+
+
+
