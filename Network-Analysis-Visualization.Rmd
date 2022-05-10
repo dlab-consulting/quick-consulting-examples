@@ -1,0 +1,139 @@
+---
+title: "Network Analysis for Contact Tracing"
+author: "Avery Richards"
+date: "12/20/2021"
+output:
+ prettydoc::html_pretty:
+    theme: architect
+    highlight: github
+    fig_width: 10
+    fig_height: 7
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+The following outlines an experimental approach to the analysis of  contact tracing data, leveraging network analysis methods to observe connections between sources and targets of infectious disease. 
+
+The example here uses sample contact tracing data, generously provided by authors of the [Epidemiologist R Handbook](https://epirhandbook.com/en/index.html), and explores relationships between __sources__ and __targets__ during a COVID19 outbreak. Sources are people with illness, and targets those they have had recent, proximal contact with. Through documentation of these source and target connections we are able to create an interactive map of acyclic exposure situations, and hopefully learn something from it.. 
+
+```{r, message=FALSE}
+
+# install and load packages
+if (!require("pacman")) install.packages("pacman")
+
+library(pacman) 
+
+pacman::p_load(
+  tidyverse, # wrangling 
+  visNetwork, # network visualization
+  prettydoc) # knitting
+
+# import data from url 
+relationships <- read_rds("https://github.com/appliedepi/epiRhandbook_eng/blob/master/data/godata/relationships_clean.rds?raw=true") %>%
+  # select "to" and "from" variables
+   select(source_visualid, target_visualid) %>%
+  # reduce id strings for legibility
+  mutate(source_visualid = str_remove_all(source_visualid, "(-2020)"),
+         target_visualid = str_remove_all(target_visualid, "(-2020)"))
+
+```
+
+This [dataset](https://github.com/appliedepi/epiRhandbook_eng/blob/master/data/godata/relationships_clean.rds?raw=true) is one of four used in a wider contact investigation excercise found [here](https://epirhandbook.com/en/contact-tracing-1.html). For an example of wrangling data for network analysis, I am focusing on the `relationships` dataset used in the chapter, and two variables of that data in particular: `source_visualid` and `target_visualid`. These two columns document frequency and directionality of connections between people together, observed through a contact tracing procedure. 
+
+It may not seem obvious, but the observations in the `relationships` data represent contact events between sources and targets. To recognize that, we can `count`events in both the source and target variables.
+
+```{r}
+
+# count source contact events
+relationships %>% 
+  count(source_visualid, sort = TRUE)
+
+```
+
+```{r}
+
+# count target contact events
+relationships %>% 
+  count(target_visualid, sort = TRUE)
+
+```
+
+
+The two main ingredients of a network graph are __nodes__ and __edges__. Nodes can be thought of as units of observation, and edges are the threads that connect nodes together. To make nodes, we fork our target and source variables into seperate objects that will become the distinct units, in this case unique __people__ who are included in the contact tracing investigation. 
+
+```{r, message=F}
+
+# establish nodes for cases, "sources" of contagion
+source_nodes <- relationships %>% 
+  distinct(source_visualid) %>% 
+  rename(label = source_visualid)
+
+# establish contacts nodes, or "targets"
+target_nodes <- relationships %>% 
+  distinct(target_visualid) %>% 
+  rename(label = target_visualid)
+
+# join both into tibble
+ct_nodes <- full_join(source_nodes, 
+                      target_nodes) %>%
+  
+  # make unique id number for each node
+  rowid_to_column("id") %>% 
+  # remove missing values 
+  na.omit() 
+
+head(ct_nodes)
+
+```
+
+
+Once we have a list of the distinct nodes, each with unique `id` values, we can join `ct_nodes` to a new fork of the `relationships` data that will make our graph edges. The `id` variable is joined in two different ways: from the `source_visualid` as `from` and the `target_visualid` as `to`.
+
+```{r}
+
+# create "edges", lines between nodes 
+ct_edges <- relationships %>% 
+  select(target_visualid, source_visualid) %>% 
+  # join the sources and rename those ids as from
+  left_join(ct_nodes, by = c("source_visualid" = "label")) %>% 
+  rename(from = id) %>% 
+   # then join the targets and rename those ids as to
+  left_join(ct_nodes, by = c("target_visualid" = "label")) %>% 
+  rename(to = id)
+  
+head(ct_edges)
+
+```
+
+The `ct_edges` object now contains all the observable connections between distinct nodes, directionalilty is obtained through the `to` and `from` variables.  With them, we can put togther a fairly nice interactive graph using the `visNetwork` package. We can also add a few basic options, like a node id selection dropdown. 
+
+```{r, fig.align = "left"}
+
+# visualise
+visNetwork(ct_nodes, ct_edges) %>% 
+  visNodes(shadow = list(enabled = TRUE, 
+                         size = 10)) %>% 
+  # options for edges
+  visEdges(arrows = "middle",
+           width = 2, 
+           hoverWidth = 20) %>%
+  # other options
+  visOptions(nodesIdSelection = TRUE) 
+
+```
+
+
+
+This interactive object is a visualization of the connections __from__ sources (cases) __to__ targets (contacts) in the `relationships` dataset. I strongly suggest zooming in and out of the graph in your browser, clicking and dragging on the nodes helps make sense of the shapes together. The scale of the graph can zoom out pretty easily as well, so just reload this page if it gets lost in whitespace.  
+
+Can we learn anything about the outbreak from this network graph? The visualization is interesting to look at and play around with, but in many ways it is a beginning, an exploratory view into what network analysis can offer the field of contact tracing. 
+
+If you like what you see, or have specific questions or feedback, feel free to email me directly: __avery.richards@berkeley.edu__
+
+
+
+
+
+
