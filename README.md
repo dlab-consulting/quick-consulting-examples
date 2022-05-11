@@ -31,7 +31,7 @@ See also the related non-notebook scripts. The [finddta.py](./finddta.py) script
 
 ## Lasso-Variable-Importance - use tidymodels framework to structure, preprocess, and tune hyperparameters for a lasso regression analysis
 
-*Scenario:* A student is hoping to run a lasso regression analysis on some data for their final project in a class. They have been working with the `glmnet` package but have encountered errors when formatting data for model preparation. Walk through the process of splitting and model preparation of data, along with bootstrapping and tuning grid approaches to hyperparameter optimization. use `vip` package to visualizing feature importance from `tidymodels` object. 
+*Scenario:* A student is hoping to run a lasso regression analysis on some data for their final project in a class. They have been working with the `glmnet` package but have encountered errors when formatting data for model preparation. Walk through the process of splitting and model preparation of data, along with bootstrapping and tuning grid approaches to hyperparameter optimization. use `vip` package to visualize feature importance from `tidymodels` object. 
 
 ## Network-Analysis-Visualization - How to visualize a social network with contact tracing data.
 
