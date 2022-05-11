@@ -1,6 +1,6 @@
 # Quick Consulting Examples
 
-Collection of quick pandas, python, and other coding examples based on real consulting requests.
+Collection of quick pandas, python, R, and other coding examples based on real consulting requests.
 
 ## VoltStats Data Archive - Webscraping example
 
