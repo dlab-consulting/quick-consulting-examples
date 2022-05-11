@@ -27,7 +27,7 @@ See also the related non-notebook scripts. The [finddta.py](./finddta.py) script
 
 ## Network-Analysis-Visualization - How to visualize a social network with contact tracing data.
 
-*Scenario:* Take a dataset recording "relationships" between cases and contacts during a COVID19 outbreak, implement complex `join` functions to wrangle and format dataframes to be handled by the `VisNetwork` package. Use the formatted dataframes to create an interactive html object that illustrates acyclic events from cases to contacts. 
+*Scenario:* Take a dataset recording "relationships" between cases and contacts during a COVID19 outbreak, implement complex `join` functions to wrangle and format dataframes to be handled by the `VisNetwork` package. Use the formatted dataframes to create an interactive html object that illustrates acyclic exposure events from cases to contacts. 
 
 
 
