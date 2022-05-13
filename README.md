@@ -29,6 +29,10 @@ See also the related non-notebook scripts. The [finddta.py](./finddta.py) script
 
 *Scenario:* You are presented with survey data containing text string responses to questions. These responses are represent combinations (mulitple elements per observation), but are separated with a clear structure. Consult is looking for a way to evaluate the many combinations of user responses, and structure data in a form that would allow for regression analysis. The script presents how to access and organize string data, exploring frequency of responses, (and combinations of responses) on a sample set of observations. The script goes on to `pivot` cleaned string data to create dummy variables out of categorical symptom responses.  
 
+## County-Level-Chloropleth-Map
+
+*Scenario* Students would like to visualize a metric they have created with a chloropleth map. Use the following script to `join` data they have assembled with a shapefile of California at the `County` level. Use `tmap` package to plot map for presentation with a few options enabled. 
+
 ## Crop-spatial-points-with-shapefile - take a raw dataset of spatial points and initialize the CRS, and then crop with a shapefile. 
 
 *Scenario:* You are presented with a large spatial dataset of floral species in the continental United States. The researcher is only concerned with data mapped into the boundaries of the state of Florida. Dataset is presented without a Coordinate Reference System. Format the raw spatial data with a CRS, and use a shapefile of the state of Florida to crop only the points that land within its boundary. 
